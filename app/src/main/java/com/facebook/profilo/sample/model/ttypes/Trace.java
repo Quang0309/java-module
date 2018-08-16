@@ -6,9 +6,9 @@ import java.util.HashMap;
 
 public class Trace {
     private String id;
-    private HashMap executionUnits;
-    private HashMap blocks;
-    private HashMap points;
+    public HashMap<String,ExecutionUnit> executionUnits;
+    public HashMap<String,Block> blocks;
+    public HashMap<String,Point> points;
     private int version;
     private ArrayList edges;
     private Properties properties;

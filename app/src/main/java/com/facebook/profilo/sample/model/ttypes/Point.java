@@ -1,9 +1,9 @@
 package com.facebook.profilo.sample.model.ttypes;
 
 public class Point {
-    private String id;
-    private int timestamp;
-    private int unalignedTimestamp;
+    protected String id;
+    protected int timestamp;
+    protected int unalignedTimestamp;
     private Properties properties;
     private int sequenceNumber;
 
