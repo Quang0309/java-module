@@ -31,4 +31,77 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
         this.stack.push(block);
         return block;
     }
+    public Block pop_block(int timestamp)
+    {
+        Block block;
+        if (stack.size()==0 || stack.peek().getEnd()!=null)
+        {
+            block = this.add_block(null,timestamp);
+            stack.push(block);
+        }
+        else
+        {
+            block = stack.pop();
+            block.create_end_point(timestamp);
+        }
+        return block;
+    }
+    public Point add_point(int timestamp)
+    {
+        if(tree==null)
+            throw new RuntimeException("Call normalize_blocks first");
+        Intervals interval = this.tree.find_interval(timestamp);
+        if (interval == null || interval.data == null)
+        {
+            Block block = this.push_block(timestamp);
+            this.pop_block(timestamp);
+            return block.add_point(timestamp);
+        }
+        else
+        {
+            return interval.data.add_point(timestamp);
+        }
+    }
+    public Block[] all_blocks()
+    {
+        ArrayList<Block> allBlocks = new ArrayList<>();
+        for(String key:this.blocks)
+        {
+            Block value = this.trace.blocks.get(key);
+            allBlocks.add(value);
+        }
+        return allBlocks.toArray(new Block[allBlocks.size()]);
+    }
+    public void normalize_blocks()
+    {
+        Block[] allBlocks = all_blocks();
+        for(Block block:allBlocks)
+        {
+            if(block.getBegin()==null)
+                block.create_begin_point(trace.getBegin());
+            if(block.getEnd()==null)
+                block.create_end_point(trace.getEnd());
+        }
+        tree = new IntervalTree();
+        for(Block block:allBlocks)
+        {
+            tree.add_interval(block.getBeginPoint().getTimestamp(),block.getEndPoint().getTimestamp(),block);
+        }
+        __assign_parent_child_blocks(tree.getRoot());
+    }
+
+    public void __assign_parent_child_blocks(Intervals node) {
+        if (node == null)
+            return;
+        for(Intervals child:node.children)
+        {
+            if(node.data!=null)
+                node.data.add_child_block(child.data);
+            __assign_parent_child_blocks(child);
+        }
+    }
+    public String getID()
+    {
+        return this.id;
+    }
 }

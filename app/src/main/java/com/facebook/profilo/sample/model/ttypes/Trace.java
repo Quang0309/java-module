@@ -1,16 +1,19 @@
 package com.facebook.profilo.sample.model.ttypes;
 
 
+import com.facebook.profilo.sample.model.Block;
+import com.facebook.profilo.sample.model.Edge;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Trace {
     private String id;
     public HashMap<String,ExecutionUnit> executionUnits;
-    public HashMap<String,Block> blocks;
+    public HashMap<String, Block> blocks;
     public HashMap<String,Point> points;
     private int version;
-    private ArrayList edges;
+    public ArrayList<Edge> edges;
     private Properties properties;
 
     public Trace() {

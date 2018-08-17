@@ -1,6 +1,6 @@
 package com.facebook.profilo.sample.model;
 
-import java.util.ArrayList;
+
 
 public class IntervalTree {
     private Intervals root;
@@ -15,7 +15,7 @@ public class IntervalTree {
         else
             return null;
     }
-    Intervals add_interval(int begin, int end, Object data)
+    Intervals add_interval(int begin, int end, Block data)
     {
         Intervals intervals = new Intervals(begin, end, data);
         if(root == null)
@@ -46,5 +46,9 @@ public class IntervalTree {
             containing.add_child(intervals);
         }
         return intervals;
+    }
+
+    public Intervals getRoot() {
+        return root;
     }
 }

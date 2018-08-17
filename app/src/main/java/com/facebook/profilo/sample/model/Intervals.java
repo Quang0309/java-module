@@ -6,7 +6,7 @@ import java.util.Collections;
 public class Intervals {
     private int begin;
     private int end;
-    private Object data = null;
+    public Block data;
     public ArrayList<Intervals> children;
     private ArrayList<Integer> __children_begins;
     private static ArrayList<Intervals> slots;
@@ -31,11 +31,11 @@ public class Intervals {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(Block data) {
         this.data = data;
     }
 
-    public Intervals(int begin, int end, Object data) {
+    public Intervals(int begin, int end, Block data) {
         this.begin = begin;
         this.end = end;
         this.data = data;

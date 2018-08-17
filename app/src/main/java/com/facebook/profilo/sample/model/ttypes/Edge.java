@@ -1,14 +1,14 @@
 package com.facebook.profilo.sample.model.ttypes;
 
 public class Edge {
-    private Point sourcePoint;
-    private Point targetPoint;
-    private Properties properties;
+    private String sourcePoint;
+    private String targetPoint;
+    protected com.facebook.profilo.sample.model.Properties properties;
 
     public Edge() {
     }
 
-    public Edge(Point sourcePoint, Point targetPoint, Properties properties) {
+    public Edge(String sourcePoint, String targetPoint, com.facebook.profilo.sample.model.Properties properties) {
         this.sourcePoint = sourcePoint;
         this.targetPoint = targetPoint;
         this.properties = properties;
