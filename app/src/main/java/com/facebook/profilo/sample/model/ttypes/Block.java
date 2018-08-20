@@ -1,5 +1,7 @@
 package com.facebook.profilo.sample.model.ttypes;
 
+import com.facebook.profilo.sample.model.Properties;
+
 import java.util.ArrayList;
 
 public class Block {
@@ -7,7 +9,7 @@ public class Block {
     protected String begin;
     protected String end;
     protected ArrayList<String> otherPoints;
-    private Properties properties;
+    protected com.facebook.profilo.sample.model.Properties properties;
 
     public Block() {
     }

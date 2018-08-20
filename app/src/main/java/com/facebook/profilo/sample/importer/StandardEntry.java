@@ -2,7 +2,8 @@ package com.facebook.profilo.sample.importer;
 
 
 
-public class StandardEntry extends TraceEntry {
+
+public class StandardEntry extends TraceEntry  {
     private int id;
     private String type;
     private long timestamp;
@@ -31,6 +32,11 @@ public class StandardEntry extends TraceEntry {
 
     public String getType() {
         return type;
+    }
+
+    @Override
+    String getData() {
+        return null;
     }
 
     public void setType(String type) {
@@ -76,4 +82,7 @@ public class StandardEntry extends TraceEntry {
     public void setArg3(long arg3) {
         this.arg3 = arg3;
     }
+
+
+
 }

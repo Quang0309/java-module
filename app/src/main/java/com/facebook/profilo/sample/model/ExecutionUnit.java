@@ -14,7 +14,7 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
         this.tree = null;
         this.stack = new Stack<>();
     }
-    public Block add_block(Integer beginTimestamp, Integer endTimestamp)
+    public Block add_block(Long beginTimestamp, Long endTimestamp)
     {
         Block block = new Block(this.trace,this,null,null);
         this.trace.blocks.put(block.getID(),block);
@@ -25,13 +25,13 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
             block.create_end_point(endTimestamp);
         return block;
     }
-    public Block push_block(int timestamp)
+    public Block push_block(long timestamp)
     {
         Block block = this.add_block(timestamp,null);
         this.stack.push(block);
         return block;
     }
-    public Block pop_block(int timestamp)
+    public Block pop_block(long timestamp)
     {
         Block block;
         if (stack.size()==0 || stack.peek().getEnd()!=null)
@@ -103,5 +103,9 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
     public String getID()
     {
         return this.id;
+    }
+    public Properties getProperties()
+    {
+        return this.properties;
     }
 }

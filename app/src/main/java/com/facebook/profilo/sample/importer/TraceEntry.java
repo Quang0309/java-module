@@ -20,4 +20,7 @@ abstract class TraceEntry {
                     Integer.parseInt(lines[5]),
                     Long.parseLong(lines[6]));
     }
+    abstract int getId();
+    abstract String getType();
+    abstract String getData();
 }

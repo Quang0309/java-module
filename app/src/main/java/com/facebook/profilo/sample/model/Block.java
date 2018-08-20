@@ -15,7 +15,7 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
         this.unit = unit;
 
     }
-    public Point create_begin_point(int timestamp)
+    public Point create_begin_point(long timestamp)
     {
         if(this.begin != null)
             System.exit(1);
@@ -26,7 +26,7 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
         this.begin_point = point;
         return point;
     }
-    public Point create_end_point(int timestamp) {
+    public Point create_end_point(long timestamp) {
         if(this.end != null)
             System.exit(1);
         Point point = new Point(this.trace,this.unit,this,timestamp,0);
@@ -36,7 +36,7 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
         this.end_point = point;
         return point;
     }
-    public Point add_point(int timestamp)
+    public Point add_point(long timestamp)
     {
         Point point = new Point(this.trace,this.unit,this,timestamp,0);
         trace.points.put(point.getID(),point);
@@ -47,8 +47,8 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
     {
         if(child.parent!=null)
             System.exit(1);
-        int call_time = child.begin_point.getTimestamp();
-        int return_time = child.end_point.getTimestamp();
+        long call_time = child.begin_point.getTimestamp();
+        long return_time = child.end_point.getTimestamp();
         if(!(this.begin_point.getTimestamp()<=call_time && call_time<=return_time
                  && return_time<this.end_point.getTimestamp()))
             System.exit(1);
@@ -86,5 +86,9 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
     public Point getEndPoint()
     {
         return this.end_point;
+    }
+    public Properties getProperties()
+    {
+        return this.properties;
     }
 }

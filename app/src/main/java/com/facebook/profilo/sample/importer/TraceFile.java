@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TraceFile {
-    private HashMap<String,String> headers;
-    private ArrayList<TraceEntry> entries;
+    public HashMap<String,String> headers;
+    public ArrayList<TraceEntry> entries;
 
     public TraceFile(HashMap headers, ArrayList<TraceEntry> entries) {
         this.headers = headers;

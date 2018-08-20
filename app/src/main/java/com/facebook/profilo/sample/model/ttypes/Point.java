@@ -2,15 +2,15 @@ package com.facebook.profilo.sample.model.ttypes;
 
 public class Point {
     protected String id;
-    protected int timestamp;
-    protected int unalignedTimestamp;
+    protected long timestamp;
+    protected long unalignedTimestamp;
     private Properties properties;
     private int sequenceNumber;
 
     public Point() {
     }
 
-    public Point(String id, int timestamp, int unalignedTimestamp, Properties properties, int sequenceNumber) {
+    public Point(String id, long timestamp, long unalignedTimestamp, Properties properties, int sequenceNumber) {
         this.id = id;
         this.timestamp = timestamp;
         this.unalignedTimestamp = unalignedTimestamp;

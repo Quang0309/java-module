@@ -15,7 +15,7 @@ public class IntervalTree {
         else
             return null;
     }
-    Intervals add_interval(int begin, int end, Block data)
+    Intervals add_interval(long begin, long end, Block data)
     {
         Intervals intervals = new Intervals(begin, end, data);
         if(root == null)

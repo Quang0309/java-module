@@ -4,26 +4,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Intervals {
-    private int begin;
-    private int end;
+    private long begin;
+    private long end;
     public Block data;
     public ArrayList<Intervals> children;
-    private ArrayList<Integer> __children_begins;
+    private ArrayList<Long> __children_begins;
     private static ArrayList<Intervals> slots;
 
-    public int getBegin() {
+    public long getBegin() {
         return begin;
     }
 
-    public void setBegin(int begin) {
+    public void setBegin(long begin) {
         this.begin = begin;
     }
 
-    public int getEnd() {
+    public long getEnd() {
         return end;
     }
 
-    public void setEnd(int end) {
+    public void setEnd(long end) {
         this.end = end;
     }
 
@@ -35,14 +35,14 @@ public class Intervals {
         this.data = data;
     }
 
-    public Intervals(int begin, int end, Block data) {
+    public Intervals(long begin, long end, Block data) {
         this.begin = begin;
         this.end = end;
         this.data = data;
         children = new ArrayList<>();
         __children_begins = new ArrayList<>();
     }
-    int length()
+    long length()
     {
         return end - begin;
     }
@@ -79,7 +79,7 @@ public class Intervals {
     {
         if(!qualify(intervals))
             return null;
-        int begin;
+        long begin;
         if (intervals instanceof Intervals)
             begin = ((Intervals) intervals).begin;
         else

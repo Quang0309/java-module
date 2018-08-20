@@ -1,11 +1,13 @@
 package com.facebook.profilo.sample.model.ttypes;
 
+import com.facebook.profilo.sample.model.Properties;
+
 import java.util.ArrayList;
 
 public class ExecutionUnit {
     protected String id;
     protected ArrayList<String> blocks;
-    protected Properties properties;
+    protected com.facebook.profilo.sample.model.Properties properties;
 
     public ExecutionUnit() {
     }

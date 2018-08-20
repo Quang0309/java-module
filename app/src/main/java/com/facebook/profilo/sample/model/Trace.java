@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 public class Trace extends com.facebook.profilo.sample.model.ttypes.Trace {
     private String id;
-    private int begin;
-    private int end;
-    public Trace(int begin,int end,String id)
+    private long begin;
+    private long end;
+    public Trace(long begin,long end,String id)
     {
         super(id,new HashMap<>(),new HashMap<>(),new HashMap<>(),0,new ArrayList<>(),new Properties());
         this.id = id!=null ? id : GenID.new_id();
@@ -34,20 +34,24 @@ public class Trace extends com.facebook.profilo.sample.model.ttypes.Trace {
         this.id = id;
     }
 
-    public int getBegin() {
+    public long getBegin() {
         return begin;
     }
 
-    public void setBegin(int begin) {
+    public void setBegin(long begin) {
         this.begin = begin;
     }
 
-    public int getEnd() {
+    public long getEnd() {
         return end;
     }
 
-    public void setEnd(int end) {
+    public void setEnd(long end) {
         this.end = end;
+    }
+    public Properties getProperties()
+    {
+        return this.properties;
     }
 }
 
