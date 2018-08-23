@@ -10,7 +10,7 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
     private Block parent;
     public Block(Trace trace,ExecutionUnit unit,String begin, String end)
     {
-        super(GenID.new_id(),begin,end,new ArrayList<String>(),new Properties());
+        super(GenID.new_id(),begin,end,new ArrayList<String>(),new Properties(null,null,null,null,null));
         this.trace = trace;
         this.unit = unit;
 
@@ -90,5 +90,21 @@ public class Block extends com.facebook.profilo.sample.model.ttypes.Block {
     public Properties getProperties()
     {
         return this.properties;
+    }
+    public Point[] points()
+    {
+        ArrayList<String> all_point_ids = new ArrayList<>();
+        all_point_ids.add(begin);
+        all_point_ids.addAll(otherPoints);
+        all_point_ids.add(end);
+        ArrayList<Point> points = new ArrayList<>();
+        for(String temp:all_point_ids)
+        {
+            if(temp!=null)
+            {
+                points.add(trace.points.get(temp));
+            }
+        }
+        return points.toArray(new Point[points.size()]);
     }
 }

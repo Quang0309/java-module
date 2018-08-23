@@ -14,12 +14,13 @@ import java.io.InputStreamReader;
 
 import java.io.OutputStream;
 
+
 import java.util.ArrayList;
 
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 
-    import java.util.zip.ZipException;
+
 import java.util.zip.ZipInputStream;
 
 public class Device {
@@ -58,19 +59,28 @@ public class Device {
     }
     boolean _validate_trace(String pack,String data_dir_path,String file_path) throws FileMovedException {
         String full_path = "/data/data/" + pack + "/" + file_path;
+        //System.out.println(full_path + file_path);
+        //System.out.println(full_path);
+        //System.out.println("haha");
         try {
+            //System.out.println(full_path);
             _ADB_EXEC_OUT_CMD_BASE[3] = pack;
             _ADB_EXEC_OUT_CMD_BASE[5] = full_path;
+            //System.out.println(full_path);
             //String[] command = _ADB_EXEC_OUT_CMD_BASE + new String[]{pack} +_CAT_CMD + new String[]{full_path};
             Process process =  Runtime.getRuntime().exec(_ADB_EXEC_OUT_CMD_BASE);
             InputStream o_err = process.getErrorStream();
             InputStream o_out = process.getInputStream();
             o_out.mark(Integer.MAX_VALUE);//mark the start of input stream
+            //System.out.println("->");
+            //for(String temp: _ADB_EXEC_OUT_CMD_BASE)
+            //    System.out.println(temp);
             BufferedReader out_bufferedReader = new BufferedReader(new InputStreamReader(o_out));
             BufferedReader err_bufferedReader = new BufferedReader(new InputStreamReader(o_err));
             if((o_err!=null&& convertBytestoStringV2(err_bufferedReader).contains(_NO_SUCH_FILE))
                     || (o_out!=null&& convertBytestoStringV2(out_bufferedReader).contains(_NO_SUCH_FILE)))
             {
+                System.out.println("throw at validate");
                 err_bufferedReader.close();
                 out_bufferedReader.close();
                 throw new FileMovedException(_NO_SUCH_FILE + full_path);
@@ -114,7 +124,8 @@ public class Device {
 
     }
     private String convertBytestoString(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+
         int read;
         char[] buffer = new char[1024];
         StringBuilder output = new StringBuilder();
@@ -141,7 +152,7 @@ public class Device {
 
         // Waits for the command to finish.
 
-
+        //System.out.println(output.toString());
         return output.toString();
     }
     private DeviceTrace _create_trace(String pack,String data_dir_path, String file_path) throws IOException, FileMovedException {
@@ -156,6 +167,7 @@ public class Device {
         if(o_err!=null&& convertBytestoString(o_err).contains(_NO_SUCH_FILE)) {
             //o_err.close();
             o_out.close();
+            System.out.println("throw at create trace");
             throw new FileMovedException(_NO_SUCH_FILE + full_path);
         }
 
@@ -203,24 +215,42 @@ public class Device {
     private DeviceTrace[] list_traces(String pack) throws IOException, FileMovedException {
         if(!_check_profilo_dir_exists(pack))
         {
-            System.out.print("Profilo directory doesn't exist");
+            System.out.println("Profilo directory doesn't exist");
             return null;
         }
         String data_dir_path = _get_data_dir_full_path(pack);
         String command[] = {"adb","shell","run-as",pack,"ls", "-R", "|", "grep", "-B", "1", ".log"};
         Process process = Runtime.getRuntime().exec(command);
         InputStream o_out = process.getInputStream();
-        String output = convertBytestoString(o_out).trim();
 
-        String []data = output.split("\n");
+        String output = convertBytestoString(o_out)/*.trim()*/;
+
+
+        String []data = output.split("\r\n");
+
         String directory = data[0].replace(":","/"); // remove trailing ":" with "/"
         ArrayList<String> traces = new ArrayList<>();
+       // String output_v2;
+
         for(int i=1;i<data.length;i++)
         {
+            //System.out.println(directory);
+          //  System.out.println(data[i]+"hazzz");
+
+           // String temp = data[i].substring(0,data[i].length());
+           // System.out.println((int)data[i].charAt(data[i].length()-1));
+           // System.out.println(temp +"wtf");
+            //char[] v1 = directory.toCharArray();
+
             output = directory + data[i];
+            //output_v2 = output_v2.concat("mua");
+            //System.out.println(buffer.toString()+"z"+"noob");
+            //System.out.println(output_v2);
+
             if(_validate_trace(pack,data_dir_path,output))
                 traces.add(output);
         }
+
         DeviceTrace[] deviceTraces = new DeviceTrace[traces.size()];
         for(int i=0;i<deviceTraces.length;i++)
         {
@@ -238,7 +268,7 @@ public class Device {
         }
         return latest;
     }
-    String pull_last_trace(String pack)
+    public String pull_last_trace(String pack)
     {
         DeviceTrace[] traces;
         while (true)
@@ -252,6 +282,7 @@ public class Device {
             {
                 e.printStackTrace();
                 System.out.println("Retrying, file moved");
+                System.exit(1);
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@ package com.facebook.profilo.sample.importer;
 
 import com.facebook.profilo.sample.model.Block;
 import com.facebook.profilo.sample.model.ExecutionUnit;
+import com.facebook.profilo.sample.model.Point;
 import com.facebook.profilo.sample.model.Trace;
 
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class TraceFileInterpreter {
     FamilyEntries __calculate_parents_children()
     {
         HashMap<Integer,TraceEntry> entries = new HashMap<>();
-        parents = new HashMap<>();
-        children = new HashMap<>();
+        HashMap<TraceEntry,TraceEntry> parents = new HashMap<>();
+        HashMap<TraceEntry,ArrayList<TraceEntry>> children = new HashMap<>();
         int parent_id;
         long min_ts = -1;
         long max_ts = -1;
@@ -124,11 +125,11 @@ public class TraceFileInterpreter {
         }
         return unit;
     }
-    Trace interpret()
+    public Trace interpret()
     {
         FamilyEntries familyEntries = __calculate_parents_children();
-        HashMap<TraceEntry,TraceEntry> parents = familyEntries.parents;
-        HashMap<TraceEntry,ArrayList<TraceEntry>> children = familyEntries.children;
+        parents = familyEntries.parents;
+        children = familyEntries.children;
         trace = new Trace(familyEntries.min,familyEntries.max,trace_file.headers.get("id"));
         HashMap<Integer,ArrayList<StandardEntry>> thread_items = new HashMap<>();
         for(TraceEntry entry:trace_file.entries)
@@ -163,7 +164,7 @@ public class TraceFileInterpreter {
                 }
             });
             ExecutionUnit unit = ensure_unit(key);
-            HashMap<Long,Long> stack = new HashMap<>();
+
             for(StandardEntry entry:entries)
             {
                 Block block=null;
@@ -200,11 +201,22 @@ public class TraceFileInterpreter {
                     assign_name(block,arr);
                 }
             }
+            unit.normalize_blocks();
+            for(StandardEntry entry:entries)
+            {
+                if(entry.getType().equals("COUNTER"))
+                {
+                    Point item = unit.add_point(entry.getTimestamp());
+                    item.getProperties().add_counter(Constants.COUNTER_NAMES.get(entry.getArg1()),entry.getArg3(),null);
+                    StandardEntry[] arr = new StandardEntry[]{entry};
+                    assign_name(item,arr);
+                }
+            }
         }
-
+        return this.trace;
     }
 
-    private void assign_name(Block block, StandardEntry[] entries) {
+    private void assign_name(Object trace_element, StandardEntry[] entries) {
 
         String name = null;
         for(StandardEntry entry:entries)
@@ -236,24 +248,53 @@ public class TraceFileInterpreter {
         }
         if(name == null)
         {
-            if(entries[0]!=null && entries[1]==null)
+            name = "";
+            for(StandardEntry entry:entries)
+            {
+                if(!name.equals("")&&entry!=null)
+                    name = name + " to ";
+                if(entry!=null)
+                    name = name + entry.getType();
+            }
+            /*if(entries[0]!=null && entries[1]==null)
                 name = entries[0].getType();
             else if(entries[0]==null && entries[1]!=null)
                 name = entries[1].getType();
             else if(entries[0]!=null && entries[1]!=null)
-                name = entries[0].getType()+" to "+ entries[1];
+                name = entries[0].getType()+" to "+ entries[1];*/
         }
 
         if(entries.length==2)
         {
-            if(entries[0]!=null && entries[1]==null)
-                block.getProperties().coreProps.put("name",name + " to Missing");
+            if(entries[0]!=null && entries[1]==null) {
+                if(trace_element instanceof Block){
+                    ((Block)trace_element).getProperties().coreProps.put("name", name + " to Missing");
+                    return;
+                }
+                else if(trace_element instanceof Point)
+                {
+                    ((Point)trace_element).getProperties().coreProps.put("name", name + " to Missing");
+                    return;
+                }
 
-            else if(entries[0]==null && entries[1]!=null)
-                block.getProperties().coreProps.put("name","Missing to "+name);
+            }
+            else if(entries[0]==null && entries[1]!=null) {
+                if(trace_element instanceof Block) {
+                    ((Block)trace_element).getProperties().coreProps.put("name", "Missing to " + name);
+                    return;
+                }
+                else if(trace_element instanceof Point )
+                {
+                    ((Point)trace_element).getProperties().coreProps.put("name", "Missing to " + name);
+                    return;
+                }
+            }
 
         }
-        block.getProperties().coreProps.put("name",name);
+        if(trace_element instanceof Block)
+            ((Block)trace_element).getProperties().coreProps.put("name",name);
+        else if (trace_element instanceof Point)
+            ((Point)trace_element).getProperties().coreProps.put("name",name);
     }
 
     private void process_thread_metadata(StandardEntry entry) {

@@ -1,5 +1,9 @@
 package com.facebook.profilo.sample.importer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,7 +11,7 @@ public class TraceFile {
     public HashMap<String,String> headers;
     public ArrayList<TraceEntry> entries;
 
-    public TraceFile(HashMap headers, ArrayList<TraceEntry> entries) {
+    public TraceFile(HashMap<String,String> headers, ArrayList<TraceEntry> entries) {
         this.headers = headers;
         this.entries = entries;
     }
@@ -80,5 +84,25 @@ public class TraceFile {
         }
         ArrayList<TraceEntry> entries = delta_decode_entries(headersMap,gen_entries);
         return new TraceFile(headersMap,entries);
+    }
+    public static TraceFile from_file(InputStream inputStream) throws IOException
+    {
+        String data = convertBytestoString(inputStream);
+        return TraceFile.from_string(data);
+    }
+    private static String convertBytestoString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        int read;
+        char[] buffer = new char[1024];
+        StringBuilder output = new StringBuilder();
+        while ((read = bufferedReader.read(buffer)) > 0) {
+            output.append(buffer, 0, read);
+        }
+        bufferedReader.close();
+
+        // Waits for the command to finish.
+
+
+        return output.toString();
     }
 }

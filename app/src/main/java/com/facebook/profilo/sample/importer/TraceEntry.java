@@ -3,7 +3,11 @@ package com.facebook.profilo.sample.importer;
 abstract class TraceEntry {
     static TraceEntry construct(String line)
     {
-        String []lines = line.split("|");
+        //System.out.println(line);
+        String []lines = line.split("\\|");
+        //for(String temp:lines)
+         //   System.out.println(temp);
+
         if(lines[1].equals("STRING_KEY")||lines[1].equals("STRING_VALUE"))
             return new BytesEntry(
                     Integer.parseInt(lines[0]),

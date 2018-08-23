@@ -9,7 +9,7 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
     private Stack<Block> stack;
     public ExecutionUnit(Trace trace)
     {
-        super(GenID.new_id(),new ArrayList(),new Properties());
+        super(GenID.new_id(),new ArrayList<String>(),new Properties(null,null,null,null,null));
         this.trace = trace;
         this.tree = null;
         this.stack = new Stack<>();
@@ -46,7 +46,7 @@ public class ExecutionUnit extends com.facebook.profilo.sample.model.ttypes.Exec
         }
         return block;
     }
-    public Point add_point(int timestamp)
+    public Point add_point(long timestamp)
     {
         if(tree==null)
             throw new RuntimeException("Call normalize_blocks first");

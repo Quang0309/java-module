@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class ExecutionUnit {
     protected String id;
-    protected ArrayList<String> blocks;
+    public ArrayList<String> blocks;
     protected com.facebook.profilo.sample.model.Properties properties;
 
     public ExecutionUnit() {

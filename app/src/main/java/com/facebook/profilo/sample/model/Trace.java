@@ -9,7 +9,7 @@ public class Trace extends com.facebook.profilo.sample.model.ttypes.Trace {
     private long end;
     public Trace(long begin,long end,String id)
     {
-        super(id,new HashMap<>(),new HashMap<>(),new HashMap<>(),0,new ArrayList<>(),new Properties());
+        super(id,new HashMap<String, ExecutionUnit>(),new HashMap<String, Block>(),new HashMap<String, Point>(),0,new ArrayList<Edge>(),new Properties(null,null,null,null,null));
         this.id = id!=null ? id : GenID.new_id();
         this.begin = begin;
         this.end = end;

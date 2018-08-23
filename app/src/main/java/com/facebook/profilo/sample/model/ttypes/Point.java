@@ -1,10 +1,12 @@
 package com.facebook.profilo.sample.model.ttypes;
 
+import com.facebook.profilo.sample.model.Properties;
+
 public class Point {
     protected String id;
     protected long timestamp;
     protected long unalignedTimestamp;
-    private Properties properties;
+    public com.facebook.profilo.sample.model.Properties properties;
     private int sequenceNumber;
 
     public Point() {
