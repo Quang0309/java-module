@@ -1,5 +1,7 @@
 package com.facebook.profilo.sample;
 
+import android.content.Context;
+
 import com.facebook.profilo.sample.device.Device;
 import com.facebook.profilo.sample.importer.TraceFile;
 import com.facebook.profilo.sample.importer.TraceFileInterpreter;
@@ -9,6 +11,7 @@ import com.facebook.profilo.sample.model.Point;
 import com.facebook.profilo.sample.model.Trace;
 import com.facebook.profilo.sample.model.ttypes.CounterUnit;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,8 +22,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-public class WorkFlow {
-    public static class Stat
+public class WorkFlow extends Thread  {
+
+    private zamCallBack callBack;
+    private Context context;
+    public WorkFlow(zamCallBack callBack,Context context) {
+
+        this.callBack = callBack;
+        this.context = context;
+    }
+
+    public class Stat
     {
         long timestamp;
         long count;
@@ -30,25 +42,37 @@ public class WorkFlow {
             this.count = count;
         }
     }
-    public static void main(String[] args) throws IOException
-    {
-       String trace_name = pullTrace(args[0]);
-       if(trace_name==null)
-       {
-           return;
-       }
-       InputStream inputStream = new FileInputStream(trace_name);
-       GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-       TraceFile traceFile = TraceFile.from_file(gzipInputStream);
-       syscounters(traceFile);
+
+
+    @Override
+    public void run() {
+
+        try {
+            File trace_name = pullTrace();
+            if (trace_name == null) {
+                callBack.onDataDumpedFail();
+                return;
+            }
+            InputStream inputStream = new FileInputStream(trace_name);
+            GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+            TraceFile traceFile = TraceFile.from_file(gzipInputStream);
+            syscounters(traceFile,callBack);
+            //callBack.onDataDumpedSucess();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            callBack.onDataDumpedFail();
+        }
+
     }
-    static String pullTrace(String pack)
+    private File pullTrace()
     {
-        Device device = new Device();
-        return device.pull_last_trace(pack);
+        Device device = new Device(context);
+        return device.pull_last_trace();
     }
 
-    static void syscounters(TraceFile traceFile)
+    private void syscounters(TraceFile traceFile,zamCallBack callBack)
     {
         TraceFileInterpreter interpreter = new TraceFileInterpreter(traceFile);
         Trace trace = interpreter.interpret();
@@ -79,6 +103,8 @@ public class WorkFlow {
             }
         }
         String[] test_counters = new String[]{"PROC_CPU_TIME","JAVA_ALLOC_BYTES"};
+        double AVG_JAVA_HEAP = 0;
+        double PROCESS_CPU_TIME = 0;
         for(String tc:test_counters)
         {
            ArrayList<Stat> data = counters.get(tc);
@@ -92,19 +118,26 @@ public class WorkFlow {
                 }
             });
             System.out.println(tc + "->");
-            long avr = 0;
+            double avr = 0;
             for(Stat temp:data)
             {
                 //System.out.print("(");
                 //System.out.print(temp.timestamp);
                 //System.out.print(",");
                 //System.out.print(temp.count);
+                //System.out.print(", ");
                 //System.out.print(")");
-                avr+=temp.count/data.size();
+                //System.out.println((double)temp.count/data.size());
+                avr+=(double)temp.count/data.size();
             }
             System.out.println(avr);
+            if(tc.equals("PROC_CPU_TIME"))
+                PROCESS_CPU_TIME = avr;
+            else
+                AVG_JAVA_HEAP = avr;
             System.out.println();
         }
+        callBack.onDataDumpedSucess(PROCESS_CPU_TIME,AVG_JAVA_HEAP);
 
     }
 
